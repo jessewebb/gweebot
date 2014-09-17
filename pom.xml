@@ -90,6 +90,8 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                             <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>ca.jessewebb.gweebot.GweeBot</mainClass>
                         </manifest>

@@ -30,7 +30,7 @@ public class GweeBot {
     private static final Logger logger = LoggerFactory.getLogger(GweeBot.class);
 
     public static void main(String[] args) {
-        logger.info("Launching GweeBot");
+        logger.info("Launching GweeBot v" + getVersion());
         String botName = "GweeBot";
         String hostname = "irc.twitch.tv";
         String port = "6667";
@@ -58,5 +58,9 @@ public class GweeBot {
         } catch (Exception e) {
             logger.error("BING!", e);
         }
+    }
+
+    public static String getVersion() {
+        return GweeBot.class.getPackage().getImplementationVersion();
     }
 }

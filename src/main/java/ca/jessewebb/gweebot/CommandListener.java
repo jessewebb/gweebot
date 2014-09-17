@@ -34,6 +34,8 @@ public class CommandListener extends ListenerAdapter {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = dateFormat.format(now);
             event.getChannel().send().message(time);
+        } else if (event.getMessage().equalsIgnoreCase("!version")) {
+            event.getChannel().send().action("v" + GweeBot.getVersion());
         }
     }
 }
