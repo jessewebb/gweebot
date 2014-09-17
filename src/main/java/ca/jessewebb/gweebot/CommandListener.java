@@ -19,8 +19,21 @@
 
 package ca.jessewebb.gweebot;
 
-public class App {
-    public static void main(String[] args) {
-        System.out.println("Hello world!");
+import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.MessageEvent;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class CommandListener extends ListenerAdapter {
+    @Override
+    public void onMessage(MessageEvent event) throws Exception {
+        if (event.getMessage().equalsIgnoreCase("!time")) {
+            Date now = new Date();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = dateFormat.format(now);
+            event.getChannel().send().message(time);
+        }
     }
 }

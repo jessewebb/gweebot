@@ -1,4 +1,4 @@
-# gweebot
+# GweeBot
 
 Copyright © 2014 Jesse Webb
 
@@ -8,6 +8,6 @@ _Disclaimer:_ This project is currently in **ALPHA** stages of development.
 
 ## About gweebot
 
-**gweebot** is an open-source IRC bot for [the GweebzTV Twitch channel](http://www.twitch.tv/GweebzTV).
+**gweebot** is an open-source IRC bot coded in Java for [the GweebzTV Twitch channel](http://www.twitch.tv/GweebzTV).
 
 [GweeBot on Twitch](http://www.twitch.tv/GweeBot)
