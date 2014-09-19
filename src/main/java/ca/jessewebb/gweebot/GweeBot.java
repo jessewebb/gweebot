@@ -26,16 +26,36 @@ import org.pircbotx.hooks.managers.ThreadedListenerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class GweeBot {
     private static final Logger logger = LoggerFactory.getLogger(GweeBot.class);
 
     public static void main(String[] args) {
         logger.info("Launching GweeBot v" + getVersion());
-        String botName = "GweeBot";
-        String hostname = "irc.twitch.tv";
-        String port = "6667";
+
+        Properties props = new Properties();
+        InputStream inputStream = GweeBot.class.getResourceAsStream("/gweebot.properties");
+        try {
+            props.load(inputStream);
+        } catch (IOException e) {
+            logger.error("BING!", e);
+            System.exit(1);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.error("BING!", e);
+            }
+        }
+
+        String botName = props.getProperty("botname");
+        String hostname = props.getProperty("hostname");
+        String port = props.getProperty("port");
+        String channel = props.getProperty("channel");
         String password = "oauth:password";
-        String channel = "#gweebztv";
 
         logger.info("BotName = " + botName);
         logger.info("Channel = " + channel);
@@ -57,6 +77,7 @@ public class GweeBot {
             bot.startBot();
         } catch (Exception e) {
             logger.error("BING!", e);
+            System.exit(1);
         }
     }
 
