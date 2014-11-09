@@ -2,12 +2,14 @@
 
 Copyright © 2014 Jesse Webb
 
-This code is available under [the GNU GPL v3](https://github.com/jessewebb/csgo-buynds/raw/master/LICENSE).
+This code is available under [the GNU GPL v3](https://github.com/jessewebb/gweebot/raw/master/LICENSE).
 
 _Disclaimer:_ This project is currently in **ALPHA** stages of development.
 
-## About gweebot
+## About GweeBot
 
-**gweebot** is an open-source IRC bot coded in Java for [the GweebzTV Twitch channel](http://www.twitch.tv/GweebzTV).
+**GweeBot** is an open-source IRC bot coded in Java for [the GweebzTV Twitch channel](http://www.twitch.tv/GweebzTV).
 
-[GweeBot on Twitch](http://www.twitch.tv/GweeBot)
+GweeBot utilizes the [PircBotX Java IRC library](https://code.google.com/p/pircbotx/).
+
+Checkout [GweeBot on Twitch](http://www.twitch.tv/GweeBot).
