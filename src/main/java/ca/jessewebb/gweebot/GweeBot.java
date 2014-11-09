@@ -26,6 +26,7 @@ import org.pircbotx.hooks.managers.ThreadedListenerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -34,20 +35,21 @@ public class GweeBot {
     private static final Logger logger = LoggerFactory.getLogger(GweeBot.class);
 
     public static void main(String[] args) {
-        logger.info("Launching GweeBot v" + getVersion());
+        logger.info("GweeBot v" + getVersion());
 
+        logger.info("Loading 'gweebot.properties' configuration file");
         Properties props = new Properties();
         InputStream inputStream = GweeBot.class.getResourceAsStream("/gweebot.properties");
         try {
             props.load(inputStream);
         } catch (IOException e) {
-            logger.error("BING!", e);
+            logger.error("Failed to load 'gweebot.properties' configuration file", e);
             System.exit(1);
         } finally {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                logger.error("BING!", e);
+                logger.error("Failed to close 'gweebot.properties' InputStream", e);
             }
         }
 
@@ -55,14 +57,28 @@ public class GweeBot {
         String hostname = props.getProperty("hostname");
         String port = props.getProperty("port");
         String channel = props.getProperty("channel");
-        String password = "oauth:password";
 
-        logger.info("BotName = " + botName);
-        logger.info("Channel = " + channel);
+        logger.info("GweeBot.botname  = " + botName);
+        logger.info("GweeBot.hostname = " + hostname);
+        logger.info("GweeBot.port     = " + port);
+        logger.info("GweeBot.channel  = " + channel);
 
+        logger.info("Requesting password through System.console()");
+        String password = null;
+        try {
+            Console console = System.console();
+            if (console == null) throw new RuntimeException("System.console() is null");
+            System.out.println("Please enter the password of '" + botName + "'");
+            char[] passwordChars = console.readPassword("Password: ");
+            password = new String(passwordChars);
+        } catch (Exception e) {
+            logger.error("Failed to get password through System.console()", e);
+            System.exit(1);
+        }
+
+        logger.info("Configuring PircBotX");
         ListenerManager<PircBotX> listenerManager = new ThreadedListenerManager<PircBotX>();
         listenerManager.addListener(new CommandListener());
-
         Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
                 .setName(botName)
                 .setLogin(botName)
@@ -70,13 +86,13 @@ public class GweeBot {
                 .addAutoJoinChannel(channel)
                 .setListenerManager(listenerManager)
                 .buildConfiguration();
-
         PircBotX bot = new PircBotX(config);
+
+        logger.info("Connecting GweeBot as '" + botName + "' to '" + hostname + ":" + port + channel + "'");
         try {
-            logger.info("Connecting...");
             bot.startBot();
         } catch (Exception e) {
-            logger.error("BING!", e);
+            logger.error("Failed to start GweeBot", e);
             System.exit(1);
         }
     }
