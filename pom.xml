@@ -109,7 +109,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/jessewebb/gweebot.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/jessewebb/gweebot.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/jessewebb/gweebot.git</developerConnection>
         <url>https://github.com/jessewebb/gweebot</url>
     </scm>
 
