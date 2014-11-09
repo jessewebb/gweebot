@@ -99,6 +99,25 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
         </plugins>
     </build>
+
+    <scm>
+        <connection>scm:git:https://github.com/jessewebb/gweebot.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jessewebb/gweebot.git</developerConnection>
+        <url>https://github.com/jessewebb/gweebot</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>local.staging.repo</id>
+            <name>Local Staging Repository</name>
+            <url>file://${project.build.directory}/mvn-staging-repo</url>
+        </repository>
+    </distributionManagement>
 </project>
