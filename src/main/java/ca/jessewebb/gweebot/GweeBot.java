@@ -19,6 +19,7 @@
 
 package ca.jessewebb.gweebot;
 
+import org.apache.commons.cli.*;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.managers.ListenerManager;
@@ -36,6 +37,23 @@ public class GweeBot {
 
     public static void main(String[] args) {
         logger.info("GweeBot v" + getVersion());
+
+        logger.info("Parsing command-line options");
+        Options options = getCommandLineOptions();
+        CommandLineParser commandLineParser = new GnuParser();
+        CommandLine commandLine = null;
+        try {
+            commandLine = commandLineParser.parse(options, args);
+        } catch (ParseException e) {
+            logger.error("Failed to parse command line options", e);
+            printCommandLineHelpMessage();
+            System.exit(1);
+        }
+
+        if (commandLine.hasOption("h")) {
+            printCommandLineHelpMessage();
+            System.exit(0);
+        }
 
         logger.info("Loading 'gweebot.properties' configuration file");
         Properties props = new Properties();
@@ -63,17 +81,22 @@ public class GweeBot {
         logger.info("GweeBot.port     = " + port);
         logger.info("GweeBot.channel  = " + channel);
 
-        logger.info("Requesting password through System.console()");
         String password = null;
-        try {
-            Console console = System.console();
-            if (console == null) throw new RuntimeException("System.console() is null");
-            System.out.println("Please enter the password of '" + botName + "'");
-            char[] passwordChars = console.readPassword("Password: ");
-            password = new String(passwordChars);
-        } catch (Exception e) {
-            logger.error("Failed to get password through System.console()", e);
-            System.exit(1);
+        if (commandLine.hasOption("p")) {
+            logger.info("Using password from command line options");
+            password = commandLine.getOptionValue("p");
+        } else {
+            logger.info("Requesting password through System.console()");
+            try {
+                Console console = System.console();
+                if (console == null) throw new RuntimeException("System.console() is null");
+                System.out.println("Please enter the password of '" + botName + "'");
+                char[] passwordChars = console.readPassword("Password: ");
+                password = new String(passwordChars);
+            } catch (Exception e) {
+                logger.error("Failed to get password through System.console()", e);
+                System.exit(1);
+            }
         }
 
         logger.info("Configuring PircBotX");
@@ -95,6 +118,18 @@ public class GweeBot {
             logger.error("Failed to start GweeBot", e);
             System.exit(1);
         }
+    }
+
+    private static Options getCommandLineOptions() {
+        Options options = new Options();
+        options.addOption("h", "help", false, "show this message");
+        options.addOption("p", "password", true, "password or oauth token");
+        return options;
+    }
+
+    private static void printCommandLineHelpMessage() {
+        HelpFormatter helpformatter = new HelpFormatter();
+        helpformatter.printHelp("GweeBot", getCommandLineOptions());
     }
 
     public static String getVersion() {
