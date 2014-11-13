@@ -21,21 +21,36 @@ package ca.jessewebb.gweebot;
 
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.MessageEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CommandListener extends ListenerAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
+    private static final CommandThrottler commandThrottler = new CommandThrottler();
+
     @Override
     public void onMessage(MessageEvent event) throws Exception {
         if (event.getMessage().equalsIgnoreCase("!time")) {
-            Date now = new Date();
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = dateFormat.format(now);
-            event.getChannel().send().message(time);
+            if (commandThrottler.throttleCommand("!time")) {
+                logger.info("Throttled command !time sent from " + event.getUser().getNick());
+            } else {
+                Date now = new Date();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String time = dateFormat.format(now);
+                event.getChannel().send().message(time);
+                commandThrottler.trackCommandUsage("!time");
+            }
         } else if (event.getMessage().equalsIgnoreCase("!version")) {
-            event.getChannel().send().action("v" + GweeBot.getVersion());
+            if (commandThrottler.throttleCommand("!version")) {
+                logger.info("Throttled command !version sent from " + event.getUser().getNick());
+            } else {
+                event.getChannel().send().action("v" + GweeBot.getVersion());
+                commandThrottler.trackCommandUsage("!version");
+            }
         }
     }
 }
