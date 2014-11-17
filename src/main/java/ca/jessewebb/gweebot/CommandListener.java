@@ -30,7 +30,7 @@ import java.util.Date;
 
 public class CommandListener extends ListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
-    private static final CommandThrottler commandThrottler = new CommandThrottler();
+    private static final CommandThrottler commandThrottler = buildCommandThrottler();
 
     @Override
     public void onMessage(MessageEvent event) throws Exception {
@@ -52,5 +52,16 @@ public class CommandListener extends ListenerAdapter {
                 commandThrottler.trackCommandUsage("!version");
             }
         }
+    }
+
+    private static CommandThrottler buildCommandThrottler() {
+        return new CommandThrottler(buildCommandThrottlerConfiguration(), new SystemClock());
+    }
+
+    private static CommandThrottlerConfiguration buildCommandThrottlerConfiguration() {
+        CommandThrottlerConfiguration configuration = new CommandThrottlerConfiguration();
+        configuration.addCommandThrottle("!time", 5000l);
+        configuration.addCommandThrottle("!version", 10000l);
+        return configuration;
     }
 }

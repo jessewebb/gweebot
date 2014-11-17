@@ -19,31 +19,33 @@
 
 package ca.jessewebb.gweebot;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class CommandThrottler {
-    private Map<String, Long> config;
+    private CommandThrottlerConfiguration configuration;
+    private EpochClock clock;
     private ConcurrentMap<String, Long> history;
 
-    public CommandThrottler() {
-        config = new HashMap<String, Long>();
-        config.put("!time", 5000l);
-        config.put("!version", 10000l);
+    public CommandThrottler(CommandThrottlerConfiguration configuration, EpochClock clock) {
+        if (configuration == null) throw new IllegalArgumentException("configuration must not be null");
+        if (clock == null) throw new IllegalArgumentException("clock must not be null");
+        this.configuration = configuration;
+        this.clock = clock;
         history = new ConcurrentHashMap<String, Long>();
     }
 
     public void trackCommandUsage(String command) {
-        history.put(command, System.currentTimeMillis());
+        if (command == null) throw new IllegalArgumentException("command must not be null");
+        history.put(command, clock.getCurrentEpochTimeMillis());
     }
 
     public boolean throttleCommand(String command) {
+        if (command == null) throw new IllegalArgumentException("command must not be null");
         boolean throttle = false;
-        if (history.containsKey(command)) {
-            long throttleUntil = history.get(command) + config.get(command);
-            throttle = System.currentTimeMillis() < throttleUntil;
+        if (configuration.hasCommandThrottle(command) && history.containsKey(command)) {
+            long throttleUntil = history.get(command) + configuration.getCommandThrottle(command);
+            throttle = clock.getCurrentEpochTimeMillis() < throttleUntil;
         }
         return throttle;
     }
