@@ -45,26 +45,12 @@ public class GweeBot {
             System.exit(0);
         }
 
-        logger.info("Loading 'gweebot.properties' configuration file");
-        Properties props = new Properties();
-        InputStream inputStream = GweeBot.class.getResourceAsStream("/gweebot.properties");
-        try {
-            props.load(inputStream);
-        } catch (IOException e) {
-            logger.error("Failed to load 'gweebot.properties' configuration file", e);
-            System.exit(1);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                logger.error("Failed to close 'gweebot.properties' InputStream", e);
-            }
-        }
+        Properties properties = loadPropertiesFile("/gweebot.properties");
 
-        String botName = props.getProperty("botname");
-        String hostname = props.getProperty("hostname");
-        String port = props.getProperty("port");
-        String channel = props.getProperty("channel");
+        String botName = properties.getProperty("botname");
+        String hostname = properties.getProperty("hostname");
+        String port = properties.getProperty("port");
+        String channel = properties.getProperty("channel");
 
         logger.info("GweeBot.botname  = " + botName);
         logger.info("GweeBot.hostname = " + hostname);
@@ -140,5 +126,24 @@ public class GweeBot {
     private static void printCommandLineHelpMessage() {
         HelpFormatter helpformatter = new HelpFormatter();
         helpformatter.printHelp("GweeBot", getCommandLineOptions());
+    }
+
+    private static Properties loadPropertiesFile(String propertiesFilePath) {
+        logger.info("Loading properties file '{}'", propertiesFilePath);
+        Properties properties = new Properties();
+        InputStream inputStream = GweeBot.class.getResourceAsStream(propertiesFilePath);
+        try {
+            properties.load(inputStream);
+        } catch (IOException e) {
+            logger.error("Failed to load properties file '{}'", e);
+            System.exit(1);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.error("Failed to close properties file '{}' InputStream", propertiesFilePath, e);
+            }
+        }
+        return properties;
     }
 }
