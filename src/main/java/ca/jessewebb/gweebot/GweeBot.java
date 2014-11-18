@@ -38,17 +38,7 @@ public class GweeBot {
     public static void main(String[] args) {
         logger.info("GweeBot v" + getVersion());
 
-        logger.info("Parsing command-line options");
-        Options options = getCommandLineOptions();
-        CommandLineParser commandLineParser = new GnuParser();
-        CommandLine commandLine = null;
-        try {
-            commandLine = commandLineParser.parse(options, args);
-        } catch (ParseException e) {
-            logger.error("Failed to parse command line options", e);
-            printCommandLineHelpMessage();
-            System.exit(1);
-        }
+        CommandLine commandLine = parseCommandLineArgs(args);
 
         if (commandLine.hasOption("h")) {
             printCommandLineHelpMessage();
@@ -120,6 +110,26 @@ public class GweeBot {
         }
     }
 
+    public static String getVersion() {
+        String version = GweeBot.class.getPackage().getImplementationVersion();
+        return (version != null) ? version : "0.0.0+DEV";
+    }
+
+    private static CommandLine parseCommandLineArgs(String[] args) {
+        logger.info("Parsing command line args");
+        Options options = getCommandLineOptions();
+        CommandLineParser commandLineParser = new GnuParser();
+        CommandLine commandLine = null;
+        try {
+            commandLine = commandLineParser.parse(options, args);
+        } catch (ParseException e) {
+            logger.error("Failed to parse command line args", e);
+            printCommandLineHelpMessage();
+            System.exit(1);
+        }
+        return commandLine;
+    }
+
     private static Options getCommandLineOptions() {
         Options options = new Options();
         options.addOption("h", "help", false, "show this message");
@@ -130,10 +140,5 @@ public class GweeBot {
     private static void printCommandLineHelpMessage() {
         HelpFormatter helpformatter = new HelpFormatter();
         helpformatter.printHelp("GweeBot", getCommandLineOptions());
-    }
-
-    public static String getVersion() {
-        String version = GweeBot.class.getPackage().getImplementationVersion();
-        return (version != null) ? version : "0.0.0+DEV";
     }
 }
