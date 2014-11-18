@@ -133,6 +133,7 @@ public class GweeBot {
     }
 
     public static String getVersion() {
-        return GweeBot.class.getPackage().getImplementationVersion();
+        String version = GweeBot.class.getPackage().getImplementationVersion();
+        return (version != null) ? version : "0.0.0+DEV";
     }
 }
