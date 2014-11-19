@@ -57,22 +57,12 @@ public class GweeBot {
         logger.info("GweeBot.port     = " + port);
         logger.info("GweeBot.channel  = " + channel);
 
-        String password = null;
+        String password;
         if (commandLine.hasOption("p")) {
             logger.info("Using password from command line options");
             password = commandLine.getOptionValue("p");
         } else {
-            logger.info("Requesting password through System.console()");
-            try {
-                Console console = System.console();
-                if (console == null) throw new RuntimeException("System.console() is null");
-                System.out.println("Please enter the password of '" + botName + "'");
-                char[] passwordChars = console.readPassword("Password: ");
-                password = new String(passwordChars);
-            } catch (Exception e) {
-                logger.error("Failed to get password through System.console()", e);
-                System.exit(1);
-            }
+            password = getPasswordFromConsole(botName);
         }
 
         logger.info("Configuring PircBotX");
@@ -145,5 +135,21 @@ public class GweeBot {
             }
         }
         return properties;
+    }
+
+    private static String getPasswordFromConsole(String botName) {
+        logger.info("Requesting password from console");
+        String password = null;
+        try {
+            Console console = System.console();
+            if (console == null) throw new RuntimeException("System.console() is null");
+            console.printf("Please enter the password of '%s'\n", botName);
+            char[] passwordChars = console.readPassword("Password: ");
+            password = new String(passwordChars);
+        } catch (Exception e) {
+            logger.error("Failed to get password from console", e);
+            System.exit(1);
+        }
+        return password;
     }
 }
