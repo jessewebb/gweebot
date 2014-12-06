@@ -87,9 +87,19 @@ public class GweeBot {
     }
 
     public static String getVersion() {
-        String version = GweeBot.class.getPackage().getImplementationVersion();
-        return (version != null) ? version : "0.0.0+DEV";
+        String version = getVersionFromPackageMetadata();
+        if (version == null) {
+            logger.warn("Failed to get GweeBot version from package metadata, using default version");
+            version = DEFAULT_VERSION;
+        }
+        return version;
     }
+
+    private static String getVersionFromPackageMetadata() {
+        return GweeBot.class.getPackage().getImplementationVersion();
+    }
+
+    private static final String DEFAULT_VERSION = "0.0.0+DEFAULT";
 
     private static CommandLine parseCommandLineArgs(String[] args) {
         logger.info("Parsing command line args");
