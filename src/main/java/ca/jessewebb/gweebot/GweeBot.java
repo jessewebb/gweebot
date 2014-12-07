@@ -65,17 +65,7 @@ public class GweeBot {
             password = getPasswordFromConsole(botName);
         }
 
-        logger.info("Configuring PircBotX");
-        ListenerManager<PircBotX> listenerManager = new ThreadedListenerManager<PircBotX>();
-        listenerManager.addListener(new CommandListener());
-        Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
-                .setName(botName)
-                .setLogin(botName)
-                .setServer(hostname, Integer.parseInt(port), password)
-                .addAutoJoinChannel(channel)
-                .setListenerManager(listenerManager)
-                .buildConfiguration();
-        PircBotX bot = new PircBotX(config);
+        PircBotX bot = buildBot(botName, hostname, port, channel, password);
 
         logger.info("Connecting GweeBot as '" + botName + "' to '" + hostname + ":" + port + channel + "'");
         try {
@@ -161,5 +151,19 @@ public class GweeBot {
             System.exit(1);
         }
         return password;
+    }
+
+    private static PircBotX buildBot(String botName, String hostname, String port, String channel, String password) {
+        logger.info("Configuring PircBotX");
+        ListenerManager<PircBotX> listenerManager = new ThreadedListenerManager<PircBotX>();
+        listenerManager.addListener(new CommandListener());
+        Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
+                .setName(botName)
+                .setLogin(botName)
+                .setServer(hostname, Integer.parseInt(port), password)
+                .addAutoJoinChannel(channel)
+                .setListenerManager(listenerManager)
+                .buildConfiguration();
+        return new PircBotX(config);
     }
 }
