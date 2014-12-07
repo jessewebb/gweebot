@@ -32,25 +32,42 @@ public class CommandListener extends ListenerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(CommandListener.class);
     private static final CommandThrottler commandThrottler = buildCommandThrottler();
 
+    private static final String COMMAND_PREFIX  = "!";
+    private static final String TIME_COMMAND    = COMMAND_PREFIX + "time";
+    private static final String VERSION_COMMAND = COMMAND_PREFIX + "version";
+
     @Override
     public void onMessage(MessageEvent event) throws Exception {
-        if (event.getMessage().equalsIgnoreCase("!time")) {
-            if (commandThrottler.throttleCommand("!time")) {
-                logger.info("Throttled command !time sent from " + event.getUser().getNick());
+        if (!event.getMessage().startsWith(COMMAND_PREFIX)) return;
+
+        String message = event.getMessage();
+        String username = event.getUser().getNick();
+        logger.info("Received command message '{}' from '{}'", message, username);
+        
+        String command = message.split("\\s+")[0].toLowerCase();
+
+        if (command.equals(TIME_COMMAND)) {
+            logger.info("Recognized command '{}'", command);
+            if (commandThrottler.throttleCommand(command)) {
+                logger.info("Throttled command '{}'", command);
             } else {
-                Date now = new Date();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = dateFormat.format(now);
-                event.getChannel().send().message(time);
-                commandThrottler.trackCommandUsage("!time");
+                logger.info("Responding to command '{}'", command);
+                event.getChannel().send().message(getTimeString());
+                logger.info("Tracking usage of command '{}'", command);
+                commandThrottler.trackCommandUsage(command);
             }
-        } else if (event.getMessage().equalsIgnoreCase("!version")) {
-            if (commandThrottler.throttleCommand("!version")) {
-                logger.info("Throttled command !version sent from " + event.getUser().getNick());
+        } else if (command.equals(VERSION_COMMAND)) {
+            logger.info("Recognized command '{}'", command);
+            if (commandThrottler.throttleCommand(command)) {
+                logger.info("Throttled command '{}'", command);
             } else {
-                event.getChannel().send().action("v" + GweeBot.getVersion());
-                commandThrottler.trackCommandUsage("!version");
+                logger.info("Responding to command '{}'", command);
+                event.getChannel().send().action(getVersionString());
+                logger.info("Tracking usage of command '{}'", command);
+                commandThrottler.trackCommandUsage(command);
             }
+        } else {
+            logger.info("Unrecognized command '{}'", command);
         }
     }
 
@@ -60,8 +77,18 @@ public class CommandListener extends ListenerAdapter {
 
     private static CommandThrottlerConfiguration buildCommandThrottlerConfiguration() {
         CommandThrottlerConfiguration configuration = new CommandThrottlerConfiguration();
-        configuration.addCommandThrottle("!time", 5000l);
-        configuration.addCommandThrottle("!version", 10000l);
+        configuration.addCommandThrottle(TIME_COMMAND, 10000l);
+        configuration.addCommandThrottle(VERSION_COMMAND, 10000l);
         return configuration;
+    }
+
+    private String getTimeString() {
+        Date now = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.format(now);
+    }
+
+    private String getVersionString() {
+        return "v" + GweeBot.getVersion();
     }
 }
