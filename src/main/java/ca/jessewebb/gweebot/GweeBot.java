@@ -65,15 +65,9 @@ public class GweeBot {
             password = getPasswordFromConsole(botName);
         }
 
-        PircBotX bot = buildBot(botName, hostname, port, channel, password);
-
         logger.info("Connecting GweeBot as '" + botName + "' to '" + hostname + ":" + port + channel + "'");
-        try {
-            bot.startBot();
-        } catch (Exception e) {
-            logger.error("Failed to start GweeBot", e);
-            System.exit(1);
-        }
+        PircBotX bot = buildBot(botName, hostname, port, channel, password);
+        startBot(bot);
     }
 
     public static String getVersion() {
@@ -154,7 +148,7 @@ public class GweeBot {
     }
 
     private static PircBotX buildBot(String botName, String hostname, String port, String channel, String password) {
-        logger.info("Configuring PircBotX");
+        logger.info("Configuring PircBotX bot");
         ListenerManager<PircBotX> listenerManager = new ThreadedListenerManager<PircBotX>();
         listenerManager.addListener(new CommandListener());
         Configuration<PircBotX> config = new Configuration.Builder<PircBotX>()
@@ -165,5 +159,15 @@ public class GweeBot {
                 .setListenerManager(listenerManager)
                 .buildConfiguration();
         return new PircBotX(config);
+    }
+
+    private static void startBot(PircBotX bot) {
+        logger.info("Starting PircBotX bot");
+        try {
+            bot.startBot();
+        } catch (Exception e) {
+            logger.error("Failed to start PircBotX bot", e);
+            System.exit(1);
+        }
     }
 }
