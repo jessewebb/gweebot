@@ -52,11 +52,6 @@ public class GweeBot {
         String port = properties.getProperty("port");
         String channel = properties.getProperty("channel");
 
-        logger.info("GweeBot.botname  = " + botName);
-        logger.info("GweeBot.hostname = " + hostname);
-        logger.info("GweeBot.port     = " + port);
-        logger.info("GweeBot.channel  = " + channel);
-
         String password;
         if (commandLine.hasOption("p")) {
             logger.info("Using password from command line options");
